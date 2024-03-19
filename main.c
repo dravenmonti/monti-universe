@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
           int ex = colony.x + (a % 3) - 1;
           int ey = colony.y + (a / 3) - 1;
 
-          if (ex != colony.x && ey != colony.y && r > 5.0) continue;
+          if (ex % 25 != 0 && ey % 25 != 0 && r > 5.0) continue;
 
           int c = ex * width * 4 + ey * 4;
           if (!(ex > -1 && ex < width && ey > -1 && ey < height))
