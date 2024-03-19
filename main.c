@@ -35,18 +35,21 @@ int to_int(char *buf) {
 int main(int argc, char **argv) {
   if (argc < 6) {
     printf("%s [input geography] [input heightmap] [seed] "
-           "[rounds] [output file]\n",
+           "[rounds] [save interval] [output file prefix]\n",
            argv[0]);
     return 1;
   }
 
-  int seed = to_int(argv[3]), rounds = to_int(argv[4]), n, width, height;
+  int seed = to_int(argv[3]), rounds = to_int(argv[4]), intv = to_int(argv[5]),
+      n, width, height;
 
   unsigned char *dataIn = stbi_load(argv[2], &width, &height, &n, 4);
   unsigned char *geoIn = stbi_load(argv[1], &width, &height, &n, 4);
 
   unsigned char *dataOut = malloc(width * height * 4);
   memset(dataOut, 0, width * height * 4);
+
+  unsigned char *dataImg = malloc(width * height * 4);
 
   // CLEAN THIS UP !!
   struct pos *colonies = malloc(width * height * sizeof(struct pos));
@@ -83,7 +86,8 @@ int main(int argc, char **argv) {
         dataOut[c] = 1;
       }
 
-      if (fabs(h2 - 0.6) / 0.6 * 5.0 * (h > 0.6 ? 1.0 : 10.0) * (h+0.5) < 5.0) {
+      if (fabs(h2 - 0.6) / 0.6 * 5.0 * (h > 0.6 ? 1.0 : 10.0) * (h + 0.5) <
+          5.0) {
         for (int a = 0; a < 9; a++) {
 
           if (colonyCount > width * height) {
@@ -109,22 +113,30 @@ int main(int argc, char **argv) {
       }
     }
     printf("rendered %i / %i\n", r, rounds);
-  }
 
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      int c = i * width * 4 + j * 4;
-      int isColony = dataOut[c];
+    if (r % intv != 0)
+      continue;
 
-      dataOut[c] = geoIn[c] / (isColony ? 1 : 10);
-      dataOut[c + 1] = geoIn[c + 1] / (isColony ? 1 : 10);
-      dataOut[c + 2] = geoIn[c + 2] / (isColony ? 1 : 10);
-      dataOut[c + 3] = 255;
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        int c = i * width * 4 + j * 4;
+        int isColony = dataOut[c];
+
+        dataImg[c] = geoIn[c] / (isColony ? 1 : 10);
+        dataImg[c + 1] = geoIn[c + 1] / (isColony ? 1 : 10);
+        dataImg[c + 2] = geoIn[c + 2] / (isColony ? 1 : 10);
+        dataImg[c + 3] = 255;
+      }
     }
+
+    char fname[1024];
+    snprintf(fname, 1024, "%s_%i.png", argv[6], r / intv);
+
+    stbi_write_png(fname, width, height, 4, dataImg, width * 4);
   }
 
-  stbi_write_png(argv[5], width, height, 4, dataOut, width * 4);
   free(dataOut);
+  free(dataImg);
 
   stbi_image_free(dataIn);
 }
