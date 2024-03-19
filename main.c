@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
   colonies[0].x = 0;
   colonies[0].y = 0;
 
-  int r2 = 0;
+  int r2 = seed;
   for (;;) {
     if (dataIn[colonies[0].x * width * 4 + colonies[0].y * 4] >= 160)
       break;
