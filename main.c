@@ -86,8 +86,9 @@ int main(int argc, char **argv) {
         dataOut[c] = 1;
       }
 
-      if (fabs(h2 - 0.6) / 0.6 * 5.0 * (h > 0.6 ? 1.0 : 10.0) * (h + 0.5) <
-          5.0) {
+      double r = fabs(h2 - 0.6) / 0.6 * 5.0 * (h > 0.6 ? 1.0 : 10.0) * (h + 0.5);
+
+      if (r < 5.8) {
         for (int a = 0; a < 9; a++) {
 
           if (colonyCount > width * height) {
@@ -99,6 +100,9 @@ int main(int argc, char **argv) {
 
           int ex = colony.x + (a % 3) - 1;
           int ey = colony.y + (a / 3) - 1;
+
+          if (ex != colony.x && ey != colony.y && r > 5.0) continue;
+
           int c = ex * width * 4 + ey * 4;
           if (!(ex > -1 && ex < width && ey > -1 && ey < height))
             continue;
@@ -109,6 +113,7 @@ int main(int argc, char **argv) {
           colonies[colonyCount].x = ex;
           colonies[colonyCount].y = ey;
           colonyCount++;
+          if (r > 5.0) break;
         }
       }
     }
