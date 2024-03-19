@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
   int r2 = 0;
   for (;;) {
-    if (dataIn[colonies[0].x * width * 4 + colonies[0].y * 4] == 160)
+    if (dataIn[colonies[0].x * width * 4 + colonies[0].y * 4] >= 160)
       break;
     colonies[0].x = (hash(colonies[0].x + r2, colonies[0].y + r2) % height);
     r2++;
